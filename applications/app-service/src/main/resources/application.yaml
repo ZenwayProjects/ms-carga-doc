@@ -1,0 +1,39 @@
+server:
+  port: 8080
+  tomcat:
+    max-swallow-size: -1
+    max-http-form-post-size: -1
+spring:
+  threads:
+    virtual:
+      enabled: true
+  application:
+    name: "ms-carga-doc"
+  devtools:
+    add-properties: false
+  h2:
+    console:
+      enabled: true
+      path: "/h2"
+  profiles:
+    include: null
+  servlet:
+    multipart:
+          enabled: true
+          max-file-size: -1
+          max-request-size: -1
+          file-size-threshold: 0
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:8080"
+storage:
+  base-path: C:/Software/proyectos/ms-carga-doc/uploads
+
