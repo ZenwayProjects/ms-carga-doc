@@ -24,17 +24,17 @@ public class CargarDocumentosMasivamenteUseCase {
             return List.of();
         }
 
-        LOGGER.info(() -> String.format("Iniciando carga masiva: total=%d, usando hilos virtuales con limite 200 por request", documentos.size()));
+//        LOGGER.info(() -> String.format("Iniciando carga masiva: total=%d, usando hilos virtuales con limite 200 por request", documentos.size()));
         Semaphore semaphore = new Semaphore(200);
         List<CompletableFuture<DocumentoResultado>> futures = documentos.stream()
                 .map(documento -> CompletableFuture.supplyAsync(() -> {
                     try {
                         semaphore.acquire();
                         try {
-                            LOGGER.info(() -> String.format("Procesando [%s] en thread=%s virtual=%s", 
+                            /*LOGGER.info(() -> String.format("Procesando [%s] en thread=%s virtual=%s",
                                     documento.getNombreOriginal(), 
                                     Thread.currentThread().getName(), 
-                                    Thread.currentThread().isVirtual()));
+                                    Thread.currentThread().isVirtual()));*/
                             List<Documento> single = new ArrayList<>();
                             single.add(documento);
                             List<DocumentoResultado> resultados = almacenamientoGateway.almacenar(single);

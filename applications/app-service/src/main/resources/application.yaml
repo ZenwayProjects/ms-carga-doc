@@ -22,7 +22,7 @@ spring:
           enabled: true
           max-file-size: -1
           max-request-size: -1
-          file-size-threshold: 0
+          file-size-threshold: 2MB
 management:
   endpoints:
     web:
