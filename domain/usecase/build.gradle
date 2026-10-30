@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(':model')
+    implementation 'io.projectreactor:reactor-core'
+}

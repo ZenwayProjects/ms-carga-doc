@@ -2,9 +2,8 @@ package co.com.bancolombia.model.documento.gateways;
 
 import co.com.bancolombia.model.documento.Documento;
 import co.com.bancolombia.model.documento.DocumentoResultado;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 public interface AlmacenamientoGateway {
-    List<DocumentoResultado> almacenar(List<Documento> documentos);
+    Flux<DocumentoResultado> almacenar(Flux<Documento> documentos);
 }

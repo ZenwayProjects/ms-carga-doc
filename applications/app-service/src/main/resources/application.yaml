@@ -1,12 +1,7 @@
 server:
   port: 8080
-  tomcat:
-    max-swallow-size: -1
-    max-http-form-post-size: -1
+management:
 spring:
-  threads:
-    virtual:
-      enabled: true
   application:
     name: "ms-carga-doc"
   devtools:
@@ -17,13 +12,8 @@ spring:
       path: "/h2"
   profiles:
     include: null
-  servlet:
-    multipart:
-          enabled: true
-          max-file-size: -1
-          max-request-size: -1
-          file-size-threshold: 2MB
-management:
+  codec:
+    max-in-memory-size: 500MB
   endpoints:
     web:
       exposure:
