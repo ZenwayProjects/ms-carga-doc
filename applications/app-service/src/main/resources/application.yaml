@@ -1,6 +1,6 @@
 server:
   port: 8080
-management:
+management: null
 spring:
   application:
     name: "ms-carga-doc"
@@ -11,9 +11,9 @@ spring:
       enabled: true
       path: "/h2"
   profiles:
-    include: null
+    active: local
   codec:
-    max-in-memory-size: 500MB
+    max-in-memory-size: "500MB"
   endpoints:
     web:
       exposure:
@@ -24,6 +24,13 @@ spring:
         enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
-storage:
-  base-path: C:/Software/proyectos/ms-carga-doc/uploads
 
+storage:
+  type: s3
+
+adapters:
+  aws:
+    s3:
+      endpoint: http://127.0.0.1:4566
+      region: us-east-1
+      bucketName: documentos

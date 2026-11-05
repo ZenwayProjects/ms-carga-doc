@@ -5,12 +5,12 @@ import co.com.bancolombia.model.documento.Documento;
 import co.com.bancolombia.model.documento.DocumentoResultado;
 import co.com.bancolombia.model.documento.gateways.AlmacenamientoGateway;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "storage.type", havingValue = "fs", matchIfMissing = true)
 public class FileSystemAdapter implements AlmacenamientoGateway {
     private final StorageProperties storageProperties;
 

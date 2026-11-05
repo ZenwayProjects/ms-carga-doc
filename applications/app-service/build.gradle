@@ -1,9 +1,10 @@
 
 dependencies {
+	implementation 'software.amazon.awssdk:sts'
     implementation project(':api-rest')
     implementation project(':file-system')
+    implementation project(':s3-repository')
     implementation project(':model')
     implementation project(':usecase')
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
-
