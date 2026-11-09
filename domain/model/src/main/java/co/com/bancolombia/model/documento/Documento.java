@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 public class Documento {
     private String nombreOriginal;
+    private String usuarioId;
+    private String categoria;
     private String contentType;
     private long tamanio;
     private byte[] contenido;

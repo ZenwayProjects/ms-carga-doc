@@ -40,6 +40,13 @@ public class S3Operations {
                 .build()).contents();
     }
 
+    public List<S3Object> listObjects(String bucketName, String prefix) {
+        return s3Client.listObjectsV2(ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(prefix)
+                .build()).contents();
+    }
+
     public InputStream getObject(String bucketName, String objectKey) {
         return s3Client.getObject(GetObjectRequest.builder()
                 .key(objectKey)

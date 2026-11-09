@@ -34,7 +34,19 @@ public class S3Adapter implements AlmacenamientoGateway {
         return Mono.fromCallable(() -> {
             try {
                 String extension = obtenerExtension(documento.getNombreOriginal());
-                String objectKey = UUID.randomUUID().toString() + extension;
+                String prefix = (properties.keyPrefix() != null && !properties.keyPrefix().isBlank())
+                        ? properties.keyPrefix() : "usuarios";
+                String usuario = sanitizar(documento.getUsuarioId());
+                String categoria = sanitizar(documento.getCategoria());
+                if (usuario == null || categoria == null) {
+                    return DocumentoResultado.builder()
+                            .nombreOriginal(documento.getNombreOriginal())
+                            .exitoso(false)
+                            .mensajeError("usuarioId/categoria inválidos")
+                            .build();
+                }
+                String objectKey = String.join("/", prefix, usuario, categoria,
+                        UUID.randomUUID() + extension);
                 byte[] contenido = documento.getContenido() != null ? documento.getContenido() : new byte[0];
                 boolean exitoso = s3Operations.uploadObject(bucketName, objectKey, contenido);
                 if (exitoso) {
@@ -64,5 +76,16 @@ public class S3Adapter implements AlmacenamientoGateway {
             return "";
         }
         return nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
+    }
+
+    private String sanitizar(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return null;
+        }
+        String v = valor.trim();
+        if (v.contains("/") || v.contains("\\") || v.contains("..")) {
+            return null;
+        }
+        return v.replaceAll("[^A-Za-z0-9._-]", "_");
     }
 }

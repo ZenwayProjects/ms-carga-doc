@@ -2,8 +2,12 @@
 
 SECONDS=0
 
-TEST_DATA_DIR="/c/Software/proyectos/ms-carga-doc-test-data"
+TEST_DATA_DIR="/c/Software/proyectos/poc/ms-carga-doc-test-data"
 LOG_FILE="$TEST_DATA_DIR/resultado_test.log"
+
+USUARIO_ID="${USUARIO_ID:-id_123}"
+CATEGORIA="${CATEGORIA:-facturas}"
+ENDPOINT="http://127.0.0.1:8080/api/documentos/usuarios/${USUARIO_ID}/${CATEGORIA}/carga-masiva"
 
 mkdir -p "$TEST_DATA_DIR"
 > "$LOG_FILE"
@@ -12,7 +16,7 @@ echo "[$(date)] Iniciando test: 1000 requests x 4 archivos"
 
 for ((req=1; req<=1000; req++)); do
     curl -s -o /dev/null -w "%{http_code}\n" --max-time 180 \
-      -X POST http://localhost:8080/api/documentos/carga-masiva \
+      -X POST "$ENDPOINT" \
       -F "files=@$TEST_DATA_DIR/vt$(((req % 100) + 1)).txt" \
       -F "files=@$TEST_DATA_DIR/vt$((((req+1) % 100) + 1)).txt" \
       -F "files=@$TEST_DATA_DIR/vt$((((req+2) % 100) + 1)).txt" \

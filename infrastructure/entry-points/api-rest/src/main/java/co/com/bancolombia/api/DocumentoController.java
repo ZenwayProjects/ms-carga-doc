@@ -9,6 +9,7 @@ import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -27,9 +28,12 @@ public class DocumentoController {
 
     private final CargarDocumentosMasivamenteUseCase cargarDocumentosMasivamenteUseCase;
 
-    @PostMapping(value = "/carga-masiva", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Mono<ResponseEntity<CargaMasivaResponse>> cargarMasivamente(@RequestPart("files") Flux<FilePart> files) {
-        Flux<Documento> documentos = files.flatMap(this::toDocumento);
+    @PostMapping(value = "/usuarios/{usuarioId}/{categoria}/carga-masiva", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<ResponseEntity<CargaMasivaResponse>> cargarMasivamente(
+            @RequestPart("files") Flux<FilePart> files,
+            @PathVariable("usuarioId") String usuarioId,
+            @PathVariable("categoria") String categoria) {
+        Flux<Documento> documentos = files.flatMap(filePart -> toDocumento(filePart, usuarioId, categoria));
         return cargarDocumentosMasivamenteUseCase.ejecutar(documentos)
                 .collectList()
                 .map(resultados -> {
@@ -54,7 +58,7 @@ public class DocumentoController {
                 });
     }
 
-    private Mono<Documento> toDocumento(FilePart filePart) {
+    private Mono<Documento> toDocumento(FilePart filePart, String usuarioId, String categoria) {
         return DataBufferUtils.join(filePart.content())
                 .publishOn(Schedulers.boundedElastic())
                 .map(dataBuffer -> {
@@ -63,6 +67,8 @@ public class DocumentoController {
                     DataBufferUtils.release(dataBuffer);
                     return Documento.builder()
                             .nombreOriginal(filePart.filename())
+                            .usuarioId(usuarioId)
+                            .categoria(categoria)
                             .contentType(filePart.headers().getContentType() != null ? filePart.headers().getContentType().toString() : null)
                             .tamanio(bytes.length)
                             .contenido(bytes)
