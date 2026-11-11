@@ -3,4 +3,5 @@ dependencies {
     implementation 'software.amazon.awssdk:s3'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'io.projectreactor:reactor-core'
+    testImplementation 'io.projectreactor:reactor-test'
 }

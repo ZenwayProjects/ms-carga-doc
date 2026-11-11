@@ -2,6 +2,7 @@ package co.com.bancolombia.s3.operations;
 
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -19,7 +20,11 @@ public class S3Operations {
 
 
     public boolean uploadObject(String bucketName, String objectKey, byte[] fileContent) {
-        return s3Client.putObject(configurePutObject(bucketName, objectKey),
+        return uploadObject(bucketName, objectKey, fileContent, null);
+    }
+
+    public boolean uploadObject(String bucketName, String objectKey, byte[] fileContent, String contentType) {
+        return s3Client.putObject(configurePutObject(bucketName, objectKey, contentType),
                 RequestBody.fromBytes(fileContent)).sdkHttpResponse().isSuccessful();
     }
 
@@ -54,6 +59,13 @@ public class S3Operations {
                 .build(), ResponseTransformer.toInputStream());
     }
 
+    public ResponseBytes<GetObjectResponse> getObjectBytes(String bucketName, String objectKey) {
+        return s3Client.getObject(GetObjectRequest.builder()
+                .key(objectKey)
+                .bucket(bucketName)
+                .build(), ResponseTransformer.toBytes());
+    }
+
     public boolean deleteObject(String bucketName, String objectKey) {
         return s3Client.deleteObject(DeleteObjectRequest.builder()
                 .key(objectKey)
@@ -61,10 +73,17 @@ public class S3Operations {
     }
 
     private PutObjectRequest configurePutObject(String bucketName, String objectKey) {
-        return PutObjectRequest.builder()
+        return configurePutObject(bucketName, objectKey, null);
+    }
+
+    private PutObjectRequest configurePutObject(String bucketName, String objectKey, String contentType) {
+        PutObjectRequest.Builder builder = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(objectKey)
-                .build();
+                .key(objectKey);
+        if (contentType != null && !contentType.isBlank()) {
+            builder.contentType(contentType);
+        }
+        return builder.build();
     }
 
 }

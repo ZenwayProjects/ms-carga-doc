@@ -2,4 +2,5 @@ dependencies {
     implementation project(':model')
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'io.projectreactor:reactor-core'
+    testImplementation 'io.projectreactor:reactor-test'
 }
