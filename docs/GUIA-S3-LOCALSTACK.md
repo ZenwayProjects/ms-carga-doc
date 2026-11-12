@@ -33,7 +33,7 @@ ms-carga-doc/
 │   └── usecase/      → CargarDocumentosMasivamenteUseCase
 ├── infrastructure/
 │   ├── entry-points/
-│   │   └── api-rest/ → DocumentoController (endpoint HTTP)
+│   │   └── reactive-web/ → DocumentoController (endpoint HTTP)
 │   └── driven-adapters/
 │       ├── file-system/   → FileSystemAdapter (guarda en disco)
 │       └── s3-repository/ → S3Adapter, S3Operations, S3Config (guarda en S3)
@@ -190,6 +190,14 @@ Respuesta esperada:
 ```
 
 ### Descargar un archivo
+El path variable es el **nombre almacenado** en S3 (el que devuelve `nombreArchivo`/`urlDescarga` en el listado). El archivo descargado conserva el nombre y extensión originales.
+
+```bash
+curl -OJ "http://127.0.0.1:8080/api/documentos/usuarios/id_123/facturas/<uuid>-vt1.txt"
+```
+
+También puedes descargar directo desde LocalStack (sin pasar por la API):
+
 ```bash
 curl "http://127.0.0.1:4566/documentos/usuarios/id_123/facturas/<uuid>.txt" \
      -H "Host: s3.localhost.localstack.cloud:4566" -o archivo.txt

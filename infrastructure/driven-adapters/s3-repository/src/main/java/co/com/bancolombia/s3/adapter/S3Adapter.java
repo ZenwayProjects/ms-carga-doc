@@ -2,7 +2,7 @@ package co.com.bancolombia.s3.adapter;
 
 import co.com.bancolombia.model.documento.Documento;
 import co.com.bancolombia.model.documento.DocumentoResultado;
-import co.com.bancolombia.model.documento.gateways.AlmacenamientoGateway;
+import co.com.bancolombia.model.documento.gateways.AlmacenamientoRepository;
 import co.com.bancolombia.s3.config.model.S3ConnectionProperties;
 import co.com.bancolombia.s3.operations.S3Operations;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 @Repository
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "storage.type", havingValue = "s3")
-public class S3Adapter implements AlmacenamientoGateway {
+public class S3Adapter implements AlmacenamientoRepository {
     private static final Pattern NOMBRE_ALMACENADO_PATTERN = Pattern.compile(
             "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}-(.+)$");
 
@@ -51,10 +51,10 @@ public class S3Adapter implements AlmacenamientoGateway {
             validarSegmento(nombreArchivo, "nombreArchivo");
 
             String bucketName = properties.bucketName();
-            String objectKey = construirKey(usuarioId, categoria, nombreArchivo);
+            String objectKey = construirPrefijo(usuarioId, categoria) + nombreArchivo;
             try {
                 ResponseBytes<GetObjectResponse> response = s3Operations.getObjectBytes(bucketName, objectKey);
-                return toDocumento(usuarioId, categoria, nombreArchivo, bucketName, objectKey, response);
+                return toDocumento(usuarioId, categoria, objectKey, bucketName, response);
             } catch (S3Exception e) {
                 if (esNoEncontrado(e)) {
                     return null;
@@ -127,14 +127,15 @@ public class S3Adapter implements AlmacenamientoGateway {
         }).subscribeOn(Schedulers.boundedElastic());
     }
 
-    private Documento toDocumento(String usuarioId, String categoria, String nombreArchivo,
-                                  String bucketName, String objectKey, ResponseBytes<GetObjectResponse> response) {
+    private Documento toDocumento(String usuarioId, String categoria, String objectKey,
+                                  String bucketName, ResponseBytes<GetObjectResponse> response) {
         byte[] contenido = response.asByteArray();
         GetObjectResponse metadata = response.response();
-        String nombreOriginal = nombreOriginalDesde(nombreArchivo);
+        String nombreAlmacenado = nombreDeKey(objectKey);
+        String nombreOriginal = nombreOriginalDesde(nombreAlmacenado);
         String contentType = (metadata.contentType() != null && !metadata.contentType().isBlank())
                 ? metadata.contentType()
-                : URLConnection.guessContentTypeFromName(nombreArchivo);
+                : URLConnection.guessContentTypeFromName(nombreAlmacenado);
         return Documento.builder()
                 .nombreOriginal(nombreOriginal)
                 .usuarioId(usuarioId)
@@ -142,7 +143,7 @@ public class S3Adapter implements AlmacenamientoGateway {
                 .contentType(contentType)
                 .tamanio(contenido.length)
                 .contenido(contenido)
-                .nombreAlmacenado(nombreArchivo)
+                .nombreAlmacenado(nombreAlmacenado)
                 .rutaAlmacenada("s3://" + bucketName + "/" + objectKey)
                 .fechaCarga(metadata.lastModified() != null
                         ? LocalDateTime.ofInstant(metadata.lastModified(), ZoneId.systemDefault()) : null)
@@ -180,8 +181,8 @@ public class S3Adapter implements AlmacenamientoGateway {
         return String.join("/", prefix, usuario, categoriaSanitizada) + "/";
     }
 
-    private String construirKey(String usuarioId, String categoria, String nombreArchivo) {
-        return construirPrefijo(usuarioId, categoria) + nombreArchivo;
+    private String nombreDeKey(String key) {
+        return key.substring(key.lastIndexOf('/') + 1);
     }
 
     private boolean esNoEncontrado(S3Exception e) {

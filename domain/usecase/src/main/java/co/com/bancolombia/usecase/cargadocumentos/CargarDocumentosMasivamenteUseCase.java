@@ -2,7 +2,7 @@ package co.com.bancolombia.usecase.cargadocumentos;
 
 import co.com.bancolombia.model.documento.Documento;
 import co.com.bancolombia.model.documento.DocumentoResultado;
-import co.com.bancolombia.model.documento.gateways.AlmacenamientoGateway;
+import co.com.bancolombia.model.documento.gateways.AlmacenamientoRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -12,12 +12,12 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class CargarDocumentosMasivamenteUseCase {
     private static final Logger LOGGER = Logger.getLogger(CargarDocumentosMasivamenteUseCase.class.getName());
-    private final AlmacenamientoGateway almacenamientoGateway;
+    private final AlmacenamientoRepository almacenamientoRepository;
 
     public Flux<DocumentoResultado> ejecutar(Flux<Documento> documentos) {
         LOGGER.info("Iniciando carga masiva con WebFlux");
         return documentos
-                .flatMap(documento -> almacenamientoGateway.almacenar(Flux.just(documento))
+                .flatMap(documento -> almacenamientoRepository.almacenar(Flux.just(documento))
                         .publishOn(Schedulers.boundedElastic())
                         .doOnNext(res -> LOGGER.info(() -> String.format("Procesando [%s] en thread=%s virtual=%s",
                                 res.getNombreOriginal() != null ? res.getNombreOriginal() : documento.getNombreOriginal(),

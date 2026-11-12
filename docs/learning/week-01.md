@@ -33,7 +33,7 @@ git checkout -b learning/replay
 - [ ] Compáralo con el código real (solo al final):
   ```bash
   git show feature/webflux-migration:infrastructure/driven-adapters/s3-repository/src/main/java/co/com/bancolombia/s3/adapter/S3Adapter.java
-  git diff feature/webflux-migration -- infrastructure/entry-points/api-rest/src/main/java/co/com/bancolombia/api/DocumentoController.java
+  git diff feature/webflux-migration -- infrastructure/entry-points/reactive-web/src/main/java/co/com/bancolombia/api/DocumentoController.java
   ```
 - [ ] Anota diferencias en `learning-log.md`.
 - [ ] Commit: `learning: replay subida S3`.

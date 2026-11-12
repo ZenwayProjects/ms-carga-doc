@@ -2,20 +2,20 @@ package co.com.bancolombia.usecase.consultardocumentos;
 
 import co.com.bancolombia.model.documento.Documento;
 import co.com.bancolombia.model.documento.DocumentoNoEncontradoException;
-import co.com.bancolombia.model.documento.gateways.AlmacenamientoGateway;
+import co.com.bancolombia.model.documento.gateways.AlmacenamientoRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 public class ObtenerDocumentoUseCase {
-    private final AlmacenamientoGateway almacenamientoGateway;
+    private final AlmacenamientoRepository almacenamientoRepository;
 
     public Mono<Documento> ejecutar(String usuarioId, String categoria, String nombreArchivo) {
         validarSegmento(usuarioId, "usuarioId");
         validarSegmento(categoria, "categoria");
         validarSegmento(nombreArchivo, "nombreArchivo");
 
-        return almacenamientoGateway.obtener(usuarioId, categoria, nombreArchivo)
+        return almacenamientoRepository.obtener(usuarioId, categoria, nombreArchivo)
                 .switchIfEmpty(Mono.error(new DocumentoNoEncontradoException(String.format(
                         "Archivo [%s] no encontrado para usuario [%s] en categoria [%s]",
                         nombreArchivo, usuarioId, categoria))));

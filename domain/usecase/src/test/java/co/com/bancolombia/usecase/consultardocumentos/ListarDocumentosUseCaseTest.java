@@ -1,7 +1,7 @@
 package co.com.bancolombia.usecase.consultardocumentos;
 
 import co.com.bancolombia.model.documento.Documento;
-import co.com.bancolombia.model.documento.gateways.AlmacenamientoGateway;
+import co.com.bancolombia.model.documento.gateways.AlmacenamientoRepository;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 
 class ListarDocumentosUseCaseTest {
 
-    private final AlmacenamientoGateway almacenamientoGateway = mock(AlmacenamientoGateway.class);
-    private final ListarDocumentosUseCase useCase = new ListarDocumentosUseCase(almacenamientoGateway);
+    private final AlmacenamientoRepository almacenamientoRepository = mock(AlmacenamientoRepository.class);
+    private final ListarDocumentosUseCase useCase = new ListarDocumentosUseCase(almacenamientoRepository);
 
     @Test
     void debeListarLosDocumentosDeLaCategoria() {
@@ -22,7 +22,7 @@ class ListarDocumentosUseCaseTest {
                 .categoria("factura")
                 .nombreAlmacenado("uuid-factura.pdf")
                 .build();
-        when(almacenamientoGateway.listar("usuario-1", "factura")).thenReturn(Flux.just(factura));
+        when(almacenamientoRepository.listar("usuario-1", "factura")).thenReturn(Flux.just(factura));
 
         StepVerifier.create(useCase.ejecutar("usuario-1", "factura"))
                 .expectNext(factura)
@@ -31,7 +31,7 @@ class ListarDocumentosUseCaseTest {
 
     @Test
     void debeRetornarVacioCuandoNoHayDocumentos() {
-        when(almacenamientoGateway.listar("usuario-1", "factura")).thenReturn(Flux.empty());
+        when(almacenamientoRepository.listar("usuario-1", "factura")).thenReturn(Flux.empty());
 
         StepVerifier.create(useCase.ejecutar("usuario-1", "factura"))
                 .verifyComplete();

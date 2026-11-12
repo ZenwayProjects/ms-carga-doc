@@ -1,6 +1,5 @@
 server:
   port: 8080
-management: null
 spring:
   application:
     name: "ms-carga-doc"
@@ -11,9 +10,10 @@ spring:
       enabled: true
       path: "/h2"
   profiles:
-    active: local
+    active: "local"
   codec:
     max-in-memory-size: "500MB"
+management:
   endpoints:
     web:
       exposure:
@@ -24,14 +24,16 @@ spring:
         enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
-
 storage:
-  type: s3
-
+  type: "s3"
 adapters:
   aws:
     s3:
-      endpoint: http://127.0.0.1:4566
-      region: us-east-1
-      bucketName: documentos
-      key-prefix: usuarios
+      endpoint: "http://127.0.0.1:4566"
+      region: "us-east-1"
+      bucketName: "documentos"
+      key-prefix: "usuarios"
+springdoc:
+  swagger-ui.path: "/v3/swagger-ui.html"
+  api-docs.path: "/v3/api-docs"
+  show-actuator: true

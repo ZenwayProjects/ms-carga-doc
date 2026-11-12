@@ -2,7 +2,7 @@ package co.com.bancolombia.usecase.consultardocumentos;
 
 import co.com.bancolombia.model.documento.Documento;
 import co.com.bancolombia.model.documento.DocumentoNoEncontradoException;
-import co.com.bancolombia.model.documento.gateways.AlmacenamientoGateway;
+import co.com.bancolombia.model.documento.gateways.AlmacenamientoRepository;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -13,8 +13,8 @@ import static org.mockito.Mockito.when;
 
 class ObtenerDocumentoUseCaseTest {
 
-    private final AlmacenamientoGateway almacenamientoGateway = mock(AlmacenamientoGateway.class);
-    private final ObtenerDocumentoUseCase useCase = new ObtenerDocumentoUseCase(almacenamientoGateway);
+    private final AlmacenamientoRepository almacenamientoRepository = mock(AlmacenamientoRepository.class);
+    private final ObtenerDocumentoUseCase useCase = new ObtenerDocumentoUseCase(almacenamientoRepository);
 
     @Test
     void debeRetornarElDocumentoSolicitado() {
@@ -24,7 +24,7 @@ class ObtenerDocumentoUseCaseTest {
                 .nombreAlmacenado("uuid-factura.pdf")
                 .nombreOriginal("factura.pdf")
                 .build();
-        when(almacenamientoGateway.obtener("usuario-1", "factura", "uuid-factura.pdf"))
+        when(almacenamientoRepository.obtener("usuario-1", "factura", "uuid-factura.pdf"))
                 .thenReturn(Mono.just(documento));
 
         StepVerifier.create(useCase.ejecutar("usuario-1", "factura", "uuid-factura.pdf"))
@@ -34,7 +34,7 @@ class ObtenerDocumentoUseCaseTest {
 
     @Test
     void debeFallarCuandoElDocumentoNoExiste() {
-        when(almacenamientoGateway.obtener("usuario-1", "factura", "no-existe.pdf"))
+        when(almacenamientoRepository.obtener("usuario-1", "factura", "no-existe.pdf"))
                 .thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.ejecutar("usuario-1", "factura", "no-existe.pdf"))

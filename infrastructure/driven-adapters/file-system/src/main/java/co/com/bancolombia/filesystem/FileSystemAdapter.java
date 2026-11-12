@@ -3,7 +3,7 @@ package co.com.bancolombia.filesystem;
 import co.com.bancolombia.filesystem.config.StorageProperties;
 import co.com.bancolombia.model.documento.Documento;
 import co.com.bancolombia.model.documento.DocumentoResultado;
-import co.com.bancolombia.model.documento.gateways.AlmacenamientoGateway;
+import co.com.bancolombia.model.documento.gateways.AlmacenamientoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "storage.type", havingValue = "fs", matchIfMissing = true)
-public class FileSystemAdapter implements AlmacenamientoGateway {
+public class FileSystemAdapter implements AlmacenamientoRepository {
     private static final Pattern NOMBRE_ALMACENADO_PATTERN = Pattern.compile(
             "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}-(.+)$");
 
