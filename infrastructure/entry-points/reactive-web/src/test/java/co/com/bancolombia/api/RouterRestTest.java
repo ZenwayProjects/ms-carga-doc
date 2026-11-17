@@ -1,7 +1,7 @@
 package co.com.bancolombia.api;
 
 import co.com.bancolombia.model.documento.Documento;
-import co.com.bancolombia.model.documento.DocumentoNoEncontradoException;
+import co.com.bancolombia.model.documento.exceptions.DocumentoNoEncontradoException;
 import co.com.bancolombia.model.documento.DocumentoResultado;
 import co.com.bancolombia.usecase.cargadocumentos.CargarDocumentosMasivamenteUseCase;
 import co.com.bancolombia.usecase.consultardocumentos.ListarDocumentosUseCase;
@@ -67,6 +67,29 @@ class RouterRestTest {
                 .jsonPath("$.fallidos").isEqualTo(0)
                 .jsonPath("$.resultados[0].nombreOriginal").isEqualTo("vt1.txt")
                 .jsonPath("$.resultados[0].exitoso").isEqualTo(true);
+    }
+
+    @Test
+    void debeRetornarBadRequestCuandoElFormatoDeArchivoNoEsValido() {
+        byte[] contenido = "contenido-docx".getBytes(StandardCharsets.UTF_8);
+        MultipartBodyBuilder multipart = new MultipartBodyBuilder();
+        multipart.part("files", new ByteArrayResource(contenido))
+                .filename("documento.docx")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM);
+        String mensaje = "Formato de archivo no válido [documento.docx]. "
+                + "Solo se permiten: txt, xls, xlsx, pdf";
+        when(cargarDocumentosUseCase.ejecutar(any()))
+                .thenReturn(Flux.error(new IllegalArgumentException(mensaje)));
+
+        client.post()
+                .uri("/api/documentos/usuarios/usuario-1/facturas/carga-masiva")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(multipart.build()))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(400)
+                .jsonPath("$.message").isEqualTo(mensaje);
     }
 
     @Test

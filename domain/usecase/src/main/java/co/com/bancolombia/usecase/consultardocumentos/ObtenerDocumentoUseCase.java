@@ -1,7 +1,8 @@
 package co.com.bancolombia.usecase.consultardocumentos;
 
 import co.com.bancolombia.model.documento.Documento;
-import co.com.bancolombia.model.documento.DocumentoNoEncontradoException;
+import co.com.bancolombia.model.documento.exceptions.DocumentoNoEncontradoException;
+import co.com.bancolombia.model.documento.validations.ExtensionArchivo;
 import co.com.bancolombia.model.documento.gateways.AlmacenamientoRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -14,6 +15,7 @@ public class ObtenerDocumentoUseCase {
         validarSegmento(usuarioId, "usuarioId");
         validarSegmento(categoria, "categoria");
         validarSegmento(nombreArchivo, "nombreArchivo");
+        ExtensionArchivo.validar(nombreArchivo);
 
         return almacenamientoRepository.obtener(usuarioId, categoria, nombreArchivo)
                 .switchIfEmpty(Mono.error(new DocumentoNoEncontradoException(String.format(

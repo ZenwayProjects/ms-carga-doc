@@ -167,6 +167,17 @@ POST /api/documentos/usuarios/{usuarioId}/{categoria}/carga-masiva
 ```
 Categorías típicas: `facturas`, `actas`, `cedulas`, etc. (una por request).
 
+### Formatos permitidos
+Solo se aceptan archivos con extensión `txt`, `xls`, `xlsx` o `pdf`. La regla vive en el dominio y se aplica tanto en la carga como en la descarga.
+
+Si un lote contiene al menos un archivo con extensión no permitida, no se almacena ninguno y la API responde `400`:
+```json
+{"status":400,"error":"Bad Request",
+ "message":"Formato de archivo no válido [documento.docx]. Solo se permiten: txt, xls, xlsx, pdf"}
+```
+
+> La validación es por nombre/extensión, no inspecciona el contenido real del archivo.
+
 ---
 
 ## 10. Probar la subida
