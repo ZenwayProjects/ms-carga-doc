@@ -13,6 +13,9 @@ spring:
     active: "local"
   codec:
     max-in-memory-size: "500MB"
+  sql:
+    init:
+      mode: "always"
 management:
   endpoints:
     web:
@@ -33,6 +36,13 @@ adapters:
       region: "us-east-1"
       bucketName: "documentos"
       key-prefix: "usuarios"
+  r2dbc:
+    host: "${DB_HOST:localhost}"
+    port: "${DB_PORT:5432}"
+    database: "${DB_NAME:carga}"
+    schema: "${DB_SCHEMA:public}"
+    username: "${DB_USER:postgres}"
+    password: "${DB_PASSWORD:postgres}"
 springdoc:
   swagger-ui.path: "/v3/swagger-ui.html"
   api-docs.path: "/v3/api-docs"

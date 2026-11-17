@@ -100,6 +100,7 @@ public class FileSystemAdapter implements AlmacenamientoRepository {
 
                 return DocumentoResultado.builder()
                         .nombreOriginal(documento.getNombreOriginal())
+                        .nombreAlmacenado(nombreAlmacenado)
                         .exitoso(true)
                         .rutaAlmacenada(archivoDestino.toAbsolutePath().toString())
                         .build();

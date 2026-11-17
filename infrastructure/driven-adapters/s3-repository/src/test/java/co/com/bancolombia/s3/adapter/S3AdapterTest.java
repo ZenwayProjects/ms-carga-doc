@@ -59,6 +59,7 @@ class S3AdapterTest {
                 .verifyComplete();
 
         assertThat(resultado.get().isExitoso()).isTrue();
+        assertThat(resultado.get().getNombreAlmacenado()).endsWith("-factura.pdf");
         assertThat(resultado.get().getRutaAlmacenada())
                 .startsWith("s3://documentos/usuarios/usuario-1/factura/")
                 .endsWith("-factura.pdf");

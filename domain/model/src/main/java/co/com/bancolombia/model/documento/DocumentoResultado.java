@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class DocumentoResultado {
     private String nombreOriginal;
+    private String nombreAlmacenado;
     private boolean exitoso;
     private String rutaAlmacenada;
     private String mensajeError;

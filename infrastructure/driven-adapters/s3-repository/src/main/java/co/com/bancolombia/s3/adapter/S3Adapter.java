@@ -108,6 +108,7 @@ public class S3Adapter implements AlmacenamientoRepository {
                 if (exitoso) {
                     return DocumentoResultado.builder()
                             .nombreOriginal(documento.getNombreOriginal())
+                            .nombreAlmacenado(nombreAlmacenado)
                             .exitoso(true)
                             .rutaAlmacenada("s3://" + bucketName + "/" + objectKey)
                             .build();

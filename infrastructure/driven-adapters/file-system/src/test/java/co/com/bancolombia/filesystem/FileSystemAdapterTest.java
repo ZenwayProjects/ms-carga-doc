@@ -51,6 +51,7 @@ class FileSystemAdapterTest {
         assertThat(archivoGuardado).exists();
         assertThat(archivoGuardado.getParent()).isEqualTo(tempDir.resolve("usuario-1").resolve("factura"));
         String nombreAlmacenado = archivoGuardado.getFileName().toString();
+        assertThat(resultado.get().getNombreAlmacenado()).isEqualTo(nombreAlmacenado);
         assertThat(nombreAlmacenado).endsWith("-Factura_Noviembre.pdf");
 
         StepVerifier.create(adapter.listar("usuario-1", "factura"))
